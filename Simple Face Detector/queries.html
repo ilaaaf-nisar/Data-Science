@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+<p>
+	SELECT 
+    DAY(order_date) as daynumber,
+    SUM(quantity * unit_price) as sales
+FROM
+    orders
+WHERE
+    YEAR(order_date) = 1996
+GROUP BY order_date
+HAVING MONTH(order_date) = 7
+</p>
+<p>
+	SELECT 
+    year(n.order_date) as year, p.category, n.quantity
+FROM
+    (SELECT 
+        o.order_date, o.quantity, product_id
+    FROM
+        orders AS o
+    LEFT JOIN customer AS c ON c.customer_id = o.customer_id where year(order_date)=1996) AS n
+        LEFT JOIN
+    product AS p ON p.product_id = n.product_id
+GROUP BY p.category
+ORDER BY p.category
+</p>
+<p>
+	SELECT 
+    n.customer_name,
+    n.quantity,
+    p.category FROM
+    (SELECT 
+        c.customer_id,
+            c.customer_name,
+            o.product_id,
+            o.order_id,
+            o.quantity
+    FROM
+        orders as o
+    LEFT JOIN customer AS c ON o.customer_id = c.customer_id
+    GROUP BY customer_id) AS n
+        LEFT JOIN
+    product AS p ON n.product_id = p.product_id where ( category = 4) and (quantity>0)
+</p>
+
+<p>
+	SELECT 
+    c.customer_id,
+    o.order_id,
+    o.product_id,
+    o.quantity,
+    c.phone_number
+FROM
+    orders AS o
+        LEFT JOIN
+    customer AS c ON o.customer_id = c.customer_id
+GROUP BY c.customer_id
+HAVING o.quantity = 0
+</p>
+<p>
+	SELECT 
+    o.city, (o.quantity*o.unit_price) as sales, p.category
+FROM
+    orders AS o
+        LEFT JOIN
+    product AS p ON o.product_id = p.product_id group by p.category, o.city order by o.city
+</p>
+
+<p>
+SELECT 
+    c.customer_name, n.total_orders, n.order_date
+FROM
+    (SELECT 
+        COUNT(customer_id) AS total_orders, order_date, customer_id
+    FROM
+        orders
+    GROUP BY customer_id
+    HAVING total_orders = 1) AS n
+        LEFT JOIN
+    customer AS c ON n.customer_id = c.customer_id
+    where monthname(n.order_date)="october" and year(n.order_date)=1996
+</p>
+</body>
+</html>
+
+
+
+
